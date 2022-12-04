@@ -5,7 +5,11 @@
 
 
 ## Clone repo and enable GPU
-Enable GPU
+
+Step1: Enable GPU
+
+Step2: Clone repo
+
 ```bash
 !git clone https://github.com/adithya3403/yolov4-deepsort
 %cd yolov4-deepsort
@@ -14,11 +18,13 @@ Enable GPU
 ## Download weights
 
 yolov4 weights: https://drive.google.com/file/d/10ks8KGAbsYG-ZXy2kBwd6TavnWAdLUtL/view?usp=share_link
+
 tolov4-tiny weights: https://drive.google.com/file/d/1CKKmQ8y0uqKRUemJ6U0_QW7i7BSkpkuR/view?usp=share_link
+
+Download and put them in ```data``` folder
 
 
 ## Running the Tracker with YOLOv4
-
 
 ```bash
 # save yolov4-tiny model
@@ -41,4 +47,4 @@ tolov4-tiny weights: https://drive.google.com/file/d/1CKKmQ8y0uqKRUemJ6U0_QW7i7B
 
 ## Resulting Video
 The resulting video will save to wherever you set the ```--output``` command line flag path to.
-I always set it to save to the ```outputs``` folder. 
+Set it to save to the ```outputs``` folder. 
