@@ -25,12 +25,12 @@ if len(physical_devices) > 0:
     tf.config.experimental.set_memory_growth(physical_devices[0], True)
 # deep sort imports
 flags.DEFINE_string('framework', 'tf', '(tf, tflite, trt')
-flags.DEFINE_string('weights', '/content/yolov4-deepsort/checkpoints/yolov4-416',
+flags.DEFINE_string('weights', '/kaggle/working/yolov4-deepsort/checkpoints/yolov4-416',
                     'path to weights file')
 flags.DEFINE_integer('size', 416, 'resize images to')
 flags.DEFINE_boolean('tiny', False, 'yolo or yolo-tiny')
 flags.DEFINE_string('model', 'yolov4', 'yolov3 or yolov4')
-flags.DEFINE_string('video', '/content/yolov4-deepsort/data/video/test.mp4',
+flags.DEFINE_string('video', '/kaggle/working/yolov4-deepsort/data/video/test.mp4',
                     'path to input video or set to 0 for webcam')
 flags.DEFINE_string('output', None, 'path to output video')
 flags.DEFINE_string('output_format', 'XVID',
@@ -51,7 +51,7 @@ def main(_argv):
     nms_max_overlap = 1.0
 
     # initialize deep sort
-    model_filename = '/content/yolov4-deepsort/model_data/mars-small128.pb'
+    model_filename = '/kaggle/working/yolov4-deepsort/model_data/mars-small128.pb'
     encoder = gdet.create_box_encoder(model_filename, batch_size=1)
     # calculate cosine distance metric
     metric = nn_matching.NearestNeighborDistanceMetric(
