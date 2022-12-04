@@ -1,4 +1,4 @@
-# yolov4-deepsort (ONLY IN KAGGLE)
+# yolov4-deepsort (ONLY IN COLAB)
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1TDlx7in-rrTkCTwB1Y61l8T9Rc23jtkS?usp=sharing)
 
@@ -14,10 +14,10 @@ Enable GPU
 
 ```bash
 # save yolov4-tiny model
-python /kaggle/working/yolov4-deepsort/save_model.py --weights /kaggle/working/yolov4-deepsort/data/yolov4-tiny.weights --output /kaggle/working/yolov4-deepsort/checkpoints/yolov4-tiny-416 --model yolov4 --tiny
+python /content/yolov4-deepsort/save_model.py --weights /content/yolov4-deepsort/data/yolov4-tiny.weights --output /content/yolov4-deepsort/checkpoints/yolov4-tiny-416 --model yolov4 --tiny
 
 # Run yolov4-tiny object tracker
-python /kaggle/working/yolov4-deepsort/object_tracker.py --weights /kaggle/working/yolov4-deepsort/checkpoints/yolov4-tiny-416 --model yolov4 --video /kaggle/working/yolov4-deepsort/data/video/test.mp4 --output /kaggle/working/yolov4-deepsort/outputs/tiny.avi --tiny
+python /content/yolov4-deepsort/object_tracker.py --weights /content/yolov4-deepsort/checkpoints/yolov4-tiny-416 --model yolov4 --video /content/yolov4-deepsort/data/video/test.mp4 --output /content/yolov4-deepsort/outputs/tiny.avi --tiny
 ```
 
 ## Resulting Video
