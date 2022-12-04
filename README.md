@@ -14,10 +14,10 @@ Enable GPU
 
 ```bash
 # save yolov4-tiny model
-python /content/yolov4-deepsort/save_model.py --weights /content/yolov4-deepsort/data/yolov4-tiny.weights --output /content/yolov4-deepsort/checkpoints/yolov4-tiny-416 --model yolov4 --tiny
+python ./save_model.py --weights ./data/yolov4-tiny.weights --output ./checkpoints/yolov4-tiny-416 --model yolov4 --tiny
 
 # Run yolov4-tiny object tracker
-python /content/yolov4-deepsort/object_tracker.py --weights /content/yolov4-deepsort/checkpoints/yolov4-tiny-416 --model yolov4 --video /content/yolov4-deepsort/data/video/test.mp4 --output /content/yolov4-deepsort/outputs/tiny.avi --tiny
+python ./object_tracker.py --weights ./checkpoints/yolov4-tiny-416 --model yolov4 --video ./data/video/test.mp4 --output ./outputs/tiny.avi --tiny
 ```
 
 ## Resulting Video
