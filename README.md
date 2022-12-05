@@ -17,14 +17,7 @@ Step2: Clone repo
 %cd yolov4-deepsort
 ```
 
-## Download weights
-
-tolov4-tiny weights: https://drive.google.com/file/d/1CKKmQ8y0uqKRUemJ6U0_QW7i7BSkpkuR/view?usp=share_link
-
-Download and put them in ```data``` folder
-
 ## Running the Tracker with YOLOv4-Tiny
-
 
 ```bash
 # save yolov4-tiny model
