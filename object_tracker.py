@@ -236,6 +236,11 @@ def main(_argv):
                         (int(bbox[0]), int(bbox[1]-10)), 0, 0.75, (255, 255, 255), 2)
             midpoint = (int((bbox[0]+bbox[2])/2), int((bbox[1]+bbox[3])/2))
             cv2.circle(frame, midpoint, 2, (0, 255, 0), 2)
+            # write 4 directions north south east west on the screen
+            cv2.putText(frame, "North", (centerVideo[0], 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(frame, "South", (centerVideo[0], frame.shape[0]-50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(frame, "East", (frame.shape[1]-50, centerVideo[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(frame, "West", (50, centerVideo[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             # check if the whole object is inside the rectangle
             if ((int(bbox[0])) < centerRectSize[0][0] or (int(bbox[1])) < centerRectSize[0][1] or (int(bbox[2])) > centerRectSize[1][0] or (int(bbox[3])) > centerRectSize[1][1]):
                 cv2.rectangle(frame, centerRectSize[0], centerRectSize[1], (255, 0, 0), 2)
@@ -298,6 +303,23 @@ def main(_argv):
                     return angle
                 angle=findAngle(midpoints[length-2], midpoints[length-1])
                 print("Angle: ", "{:.2f}".format(angle))
+                # give all 8 directions
+                if angle > 337.5 or angle <= 22.5:
+                    print("Direction: North")
+                elif angle > 22.5 and angle <= 67.5:
+                    print("Direction: North-East")
+                elif angle > 67.5 and angle <= 112.5:
+                    print("Direction: East")
+                elif angle > 112.5 and angle <= 157.5:
+                    print("Direction: South-East")
+                elif angle > 157.5 and angle <= 202.5:
+                    print("Direction: South")
+                elif angle > 202.5 and angle <= 247.5:
+                    print("Direction: South-West")
+                elif angle > 247.5 and angle <= 292.5:
+                    print("Direction: West")
+                elif angle > 292.5 and angle <= 337.5:
+                    print("Direction: North-West")
                 # plt.plot(midpoints[length-1][0], midpoints[length-1][1], 'ro')
                 # plt.plot(midpoints[length-2][0], midpoints[length-2][1], 'ro')
                 # plt.plot([midpoints[length-1][0], midpoints[length-2][0]], [
