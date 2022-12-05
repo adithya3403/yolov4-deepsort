@@ -307,10 +307,10 @@ def main(_argv):
                 distance = findDistance(
                     midpoints[length-1], midpoints[length-2])
                 print("Distance: ", "{:.2f}".format(distance))
-                if midpoints[length-1][0] > midpoints[length-2][0]:
-                    print("Direction: Right")
-                else:
-                    print("Direction: Left")
+                # if midpoints[length-1][0] > midpoints[length-2][0]:
+                #     print("Direction: Right")
+                # else:
+                #     print("Direction: Left")
 
                 # the coordinates of the object is given in the form of (x,y)
                 # the coordinates of the drone are at the centre of the frame
@@ -323,7 +323,7 @@ def main(_argv):
                         angle=360+angle
                     return angle
                 angle=findAngle(centerVideo, midpoints[length-1])
-                print("Angle: ", "{:.2f}".format(angle))
+                # print("Angle: ", "{:.2f}".format(angle))
                 # give all 8 directions
                 # print the direction on the screen at the top left
                 # keep in red color
@@ -343,7 +343,9 @@ def main(_argv):
                     dir="West"
                 elif angle > 292.5 and angle <= 337.5:
                     dir="North-West"
-                cv2.putText(frame, "moving towards: " + dir, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                # print both angle
+                cv2.putText(frame, "Angle: "+str("{:.2f}".format(angle)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                # cv2.putText(frame, "moving towards: " + dir +" angle: "+{".2f"}.format(angle), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 # plt.plot(midpoints[length-1][0], midpoints[length-1][1], 'ro')
                 # plt.plot(midpoints[length-2][0], midpoints[length-2][1], 'ro')
                 # plt.plot([midpoints[length-1][0], midpoints[length-2][0]], [
