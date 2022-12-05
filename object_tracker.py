@@ -237,10 +237,10 @@ def main(_argv):
             midpoint = (int((bbox[0]+bbox[2])/2), int((bbox[1]+bbox[3])/2))
             cv2.circle(frame, midpoint, 2, (0, 255, 0), 2)
             # write 4 directions north south east west on the screen
-            cv2.putText(frame, "North", (centerVideo[0], 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-            cv2.putText(frame, "South", (centerVideo[0], frame.shape[0]-50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-            cv2.putText(frame, "East", (frame.shape[1]-50, centerVideo[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-            cv2.putText(frame, "West", (50, centerVideo[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+            cv2.putText(frame, "N", (centerVideo[0], 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+            cv2.putText(frame, "S", (centerVideo[0], frame.shape[0]-50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+            cv2.putText(frame, "E", (frame.shape[1]-50, centerVideo[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+            cv2.putText(frame, "W", (50, centerVideo[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
             # check if the whole object is inside the rectangle
             if ((int(bbox[0])) < centerRectSize[0][0] or (int(bbox[1])) < centerRectSize[0][1] or (int(bbox[2])) > centerRectSize[1][0] or (int(bbox[3])) > centerRectSize[1][1]):
                 cv2.rectangle(frame, centerRectSize[0], centerRectSize[1], (255, 0, 0), 2)
@@ -249,7 +249,29 @@ def main(_argv):
             else : 
                 cv2.rectangle(frame, centerRectSize[0], centerRectSize[1], (0, 255, 0), 2)
                 cv2.putText(frame, text="Locked", org=centerRectSize[0], fontFace=0, fontScale=0.75, color=(0,255,0), thickness=2)
-                
+            # draw x and y axes
+            cv2.line(frame, (0, centerVideo[1]), (frame.shape[1], centerVideo[1]), (255, 0, 0), 2)
+            cv2.line(frame, (centerVideo[0], 0), (centerVideo[0], frame.shape[0]), (255, 0, 0), 2)
+            # draw line joining the center of the frame and the midpoint of the object
+            cv2.line(frame, centerVideo, midpoint, (0, 255, 0), 2)
+            # check if the object is in the north, south, east or west of the frame
+            if (midpoint[0] < centerVideo[0] and midpoint[1] < centerVideo[1]):
+                dir="North-West"
+            elif (midpoint[0] < centerVideo[0] and midpoint[1] > centerVideo[1]):
+                dir="South-West"
+            elif (midpoint[0] > centerVideo[0] and midpoint[1] < centerVideo[1]):
+                dir="North-East"
+            elif (midpoint[0] > centerVideo[0] and midpoint[1] > centerVideo[1]):
+                dir="South-East"
+            elif (midpoint[0] == centerVideo[0] and midpoint[1] < centerVideo[1]):
+                dir="North"
+            elif (midpoint[0] == centerVideo[0] and midpoint[1] > centerVideo[1]):
+                dir="South"
+            elif (midpoint[0] < centerVideo[0] and midpoint[1] == centerVideo[1]):
+                dir="West"
+            elif (midpoint[0] > centerVideo[0] and midpoint[1] == centerVideo[1]):
+                dir="East"
+            cv2.putText(frame, dir, (centerVideo[0], centerVideo[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             # start joining the midpoints of the bounding boxes
             # if track.track_id not in midpoint_dict:
             #     midpoint_dict[track.track_id] = [midpoint]
@@ -286,10 +308,10 @@ def main(_argv):
                 distance = findDistance(
                     midpoints[length-1], midpoints[length-2])
                 print("Distance: ", "{:.2f}".format(distance))
-                if midpoints[length-1][0] > midpoints[length-2][0]:
-                    print("Direction: Right")
-                else:
-                    print("Direction: Left")
+                # if midpoints[length-1][0] > midpoints[length-2][0]:
+                #     print("Direction: Right")
+                # else:
+                #     print("Direction: Left")
 
                 # the coordinates of the object is given in the form of (x,y)
                 # the coordinates of the drone are at the centre of the frame
@@ -302,26 +324,28 @@ def main(_argv):
                         angle=360+angle
                     return angle
                 angle=findAngle(centerVideo, midpoints[length-1])
-                print("Angle: ", "{:.2f}".format(angle))
+                # print("Angle: ", "{:.2f}".format(angle))
                 # give all 8 directions
-                # print the direction ont he screen at the top left
+                # print the direction on the screen at the top left
                 # keep in red color
                 if angle > 337.5 or angle <= 22.5:
-                    cv2.putText(frame, "North", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    dir="North"
                 elif angle > 22.5 and angle <= 67.5:
-                    cv2.putText(frame, "North-East", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    dir="North East"
                 elif angle > 67.5 and angle <= 112.5:
-                    cv2.putText(frame, "East", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    dir="East"
                 elif angle > 112.5 and angle <= 157.5:
-                    cv2.putText(frame, "South-East", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    dir="South-East"
                 elif angle > 157.5 and angle <= 202.5:
-                    cv2.putText(frame, "South", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    dir="South"
                 elif angle > 202.5 and angle <= 247.5:
-                    cv2.putText(frame, "South-West", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    dir="South-West"
                 elif angle > 247.5 and angle <= 292.5:
-                    cv2.putText(frame, "West", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    dir="West"
                 elif angle > 292.5 and angle <= 337.5:
-                    cv2.putText(frame, "North-West", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    dir="North-West"
+                cv2.putText(frame, "Angle: "+str("{:.2f}".format(angle)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 225, 0), 2)
+                # cv2.putText(frame, "moving towards: " + dir +" angle: "+{".2f"}.format(angle), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 # plt.plot(midpoints[length-1][0], midpoints[length-1][1], 'ro')
                 # plt.plot(midpoints[length-2][0], midpoints[length-2][1], 'ro')
                 # plt.plot([midpoints[length-1][0], midpoints[length-2][0]], [
