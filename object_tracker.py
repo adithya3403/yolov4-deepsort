@@ -294,7 +294,7 @@ def main(_argv):
                     theta=math.atan2(dy,dx)
                     angle=math.degrees(theta)
                     if angle<0:
-                        angle+=360
+                        angle=360+angle
                     return angle
                 angle=findAngle(midpoints[length-2], midpoints[length-1])
                 print("Angle: ", "{:.2f}".format(angle))
