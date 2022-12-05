@@ -209,9 +209,18 @@ def main(_argv):
         tracker.predict()
         tracker.update(detections)
 
+        # x,y coordinates of the center of the frame
+        centerVideo = (int(frame.shape[1]/2), int(frame.shape[0]/2))
+
+        # rectangle in the center with 50% of the frame size
+        centerRectSize = (int(centerVideo[0] - frame.shape[1]/4), int(centerVideo[1] - frame.shape[0]/4)) , (int(centerVideo[0] + frame.shape[1]/4), int(centerVideo[1] + frame.shape[0]/4))
+
         # update tracks
         for track in tracker.tracks:
             if not track.is_confirmed() or track.time_since_update > 1:
+                cv2.rectangle(frame, centerRectSize[0], centerRectSize[1], (255, 0, 0), 2)
+                cv2.putText(frame, text="noObject", org=centerRectSize[0], fontFace=0, fontScale=0.75, color=(255,0,0), thickness=2)
+                print("No object detected")
                 continue
             bbox = track.to_tlbr()
             class_name = track.get_class()
@@ -227,6 +236,15 @@ def main(_argv):
                         (int(bbox[0]), int(bbox[1]-10)), 0, 0.75, (255, 255, 255), 2)
             midpoint = (int((bbox[0]+bbox[2])/2), int((bbox[1]+bbox[3])/2))
             cv2.circle(frame, midpoint, 2, (0, 255, 0), 2)
+            # check if the whole object is inside the rectangle
+            if ((int(bbox[0])) < centerRectSize[0][0] or (int(bbox[1])) < centerRectSize[0][1] or (int(bbox[2])) > centerRectSize[1][0] or (int(bbox[3])) > centerRectSize[1][1]):
+                cv2.rectangle(frame, centerRectSize[0], centerRectSize[1], (255, 0, 0), 2)
+                cv2.putText(frame, text="notLocked", org=centerRectSize[0], fontFace=0, fontScale=0.75, color=(255,0,0), thickness=2)
+                print()
+            else : 
+                cv2.rectangle(frame, centerRectSize[0], centerRectSize[1], (0, 255, 0), 2)
+                cv2.putText(frame, text="Locked", org=centerRectSize[0], fontFace=0, fontScale=0.75, color=(0,255,0), thickness=2)
+                
             # start joining the midpoints of the bounding boxes
             # if track.track_id not in midpoint_dict:
             #     midpoint_dict[track.track_id] = [midpoint]
@@ -258,6 +276,7 @@ def main(_argv):
                 print("Current coordinate: ", midpoints[length-1])
 
                 def findDistance(p1, p2):
+                    # find 
                     return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
                 distance = findDistance(
                     midpoints[length-1], midpoints[length-2])
@@ -267,9 +286,17 @@ def main(_argv):
                 else:
                     print("Direction: Left")
 
+                # the coordinates of the object is given in the form of (x,y)
+                # the coordinates of the drone are at the centre of the frame
                 def findAngle(p1, p2):
-                    return math.atan2(p2[1] - p1[1], p2[0] - p1[0])
-                angle = findAngle(midpoints[length-1], midpoints[length-2])
+                    dx=p2[0]-p1[0]
+                    dy=p2[1]-p1[1]
+                    theta=math.atan2(dy,dx)
+                    angle=math.degrees(theta)
+                    if angle<0:
+                        angle+=360
+                    return angle
+                angle=findAngle(midpoints[length-2], midpoints[length-1])
                 print("Angle: ", "{:.2f}".format(angle))
                 # plt.plot(midpoints[length-1][0], midpoints[length-1][1], 'ro')
                 # plt.plot(midpoints[length-2][0], midpoints[length-2][1], 'ro')
