@@ -273,6 +273,15 @@ def main(_argv):
                 dir="East"
             cv2.putText(frame, dir, (centerVideo[0], centerVideo[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             # start joining the midpoints of the bounding boxes
+            
+            # print lat long of the object
+            lat_drone = 0.000000000
+            long_drone = 0.000000000
+            latit = midpoint[0] * (90 / frame.shape[1]) - 90 + lat_drone
+            longit = midpoint[1] * (180 / frame.shape[0]) - 180 + long_drone
+            cv2.putText(frame, "Lat: " + str(latit), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(frame, "Long: " + str(longit), (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            
             # if track.track_id not in midpoint_dict:
             #     midpoint_dict[track.track_id] = [midpoint]
             # else:
