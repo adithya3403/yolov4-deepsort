@@ -1,5 +1,6 @@
 import math
 import os
+import geopy
 # comment out below line to enable tensorflow logging outputs
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import time
@@ -275,22 +276,35 @@ def main(_argv):
             # start joining the midpoints of the bounding boxes
             
             # print lat long of the object
-            lat_drone = 0.000000000
-            long_drone = 0.000000000
-            latit = midpoint[0] * (90 / frame.shape[1]) - 90 + lat_drone
-            longit = midpoint[1] * (180 / frame.shape[0]) - 180 + long_drone
-            cv2.putText(frame, "Lat: " + str(latit), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            cv2.putText(frame, "Long: " + str(longit), (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            # lat_drone = 0.000000000
+            # long_drone = 0.000000000
+            # latit = midpoint[0] * (90 / frame.shape[1]) - 90 + lat_drone
+            # longit = midpoint[1] * (180 / frame.shape[0]) - 180 + long_drone
+            # cv2.putText(frame, "Lat: " + str(latit), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            # cv2.putText(frame, "Long: " + str(longit), (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+            # let the image resolution be m*n in pixels
+            m, n=frame.shape[0], frame.shape[1]
+            theta1=39.80557108 # front view angle is theta1
+            theta2=24.29388761 # side view angle is theta2
+            # independent for every camera but constant all the time
+            # victus webcam
+
+            # given altitude 15m
+            a=15
+            w=a*math.tan(theta1)
+            Sw=2*w/max(m, n) # scale of width
+            h=a*math.tan(theta2)
+            Sh=2*h/max(m, n) # scale of height
+
+            X_actual=Sw*(midpoint[0])
+            Y_actual=Sh*(midpoint[1])
+            X_origin=Sw*(centerVideo[0])
+            Y_origin=Sh*(centerVideo[1])
+            dist=math.sqrt((X_actual-X_origin)**2+(Y_actual-Y_origin)**2) # distance between origin and actual
+            cv2.putText(frame, str(dist), (midpoint[0], midpoint[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
             
-            # if track.track_id not in midpoint_dict:
-            #     midpoint_dict[track.track_id] = [midpoint]
-            # else:
-            #     midpoint_dict[track.track_id].append(midpoint)
-            # if len(midpoint_dict[track.track_id]) > 1:
-            #     for i in range(len(midpoint_dict[track.track_id])-1):
-            #         # let color be green
-            #         cv2.line(frame, midpoint_dict[track.track_id][i], midpoint_dict[track.track_id]
-            #                  [i+1], (0, 255, 0), 2)
 
         # if enable info flag then print details about each track
             if FLAGS.info:
@@ -354,13 +368,6 @@ def main(_argv):
                 elif angle > 292.5 and angle <= 337.5:
                     dir="North-West"
                 cv2.putText(frame, "Angle: "+str("{:.2f}".format(angle)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 225, 0), 2)
-                # cv2.putText(frame, "moving towards: " + dir +" angle: "+{".2f"}.format(angle), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-                # plt.plot(midpoints[length-1][0], midpoints[length-1][1], 'ro')
-                # plt.plot(midpoints[length-2][0], midpoints[length-2][1], 'ro')
-                # plt.plot([midpoints[length-1][0], midpoints[length-2][0]], [
-                #     midpoints[length-1][1], midpoints[length-2][1]], 'r-')
-                # plt.axis([0, 1020, 0, 1080])
-                # plt.pause(0.05)
 
         # calculate frames per second of running detections
         fps = 1.0 / (time.time() - start_time)
@@ -376,7 +383,6 @@ def main(_argv):
             out.write(result)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-    # plt.show()
     cv2.destroyAllWindows()
 
 
