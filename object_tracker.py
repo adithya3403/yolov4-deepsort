@@ -1,6 +1,7 @@
 import math
 import os
 import geopy
+from geopy.distance import geodesic
 # comment out below line to enable tensorflow logging outputs
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import time
@@ -43,6 +44,9 @@ flags.DEFINE_boolean('count', False, 'count objects being tracked on screen')
 def main(_argv):
     midpoints = []
     midpoint_dict = {}
+    # let lat1 and lat2 be latitude and longitude of present location
+    lat1, lon1=17.388880, 78.528364
+    lat2, lon2=0,0
     # Definition of the parameters
     max_cosine_distance = 0.4
     nn_budget = None
@@ -272,7 +276,7 @@ def main(_argv):
                 dir="West"
             elif (midpoint[0] > centerVideo[0] and midpoint[1] == centerVideo[1]):
                 dir="East"
-            cv2.putText(frame, dir, (centerVideo[0], centerVideo[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            # cv2.putText(frame, dir, (centerVideo[0], centerVideo[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             # start joining the midpoints of the bounding boxes
             
             # print lat long of the object
@@ -304,8 +308,6 @@ def main(_argv):
             dist=math.sqrt((X_actual-X_origin)**2+(Y_actual-Y_origin)**2) # distance between origin and actual
             cv2.putText(frame, str(dist), (midpoint[0], midpoint[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-            
-
         # if enable info flag then print details about each track
             if FLAGS.info:
                 print("Tracker ID: {}, Class: {},  BBox Coords (xmin, ymin, xmax, ymax): {}".format(
@@ -320,54 +322,34 @@ def main(_argv):
             points = [x, y]
             midpoints.append(points)
             length = len(midpoints)
+            def findAngle(p1, p2):
+                dx=p2[0]-p1[0]
+                dy=p2[1]-p1[1]
+                # angle is between 0 and 90 in first quadrant
+                angle=math.degrees(math.atan(dy/dx))
+                # angle is between 90 and 180 in second quadrant
+                if dx < 0 and dy > 0:
+                    angle=180+angle
+                # angle is between 180 and 270 in third quadrant
+                elif dx < 0 and dy < 0:
+                    angle=180+angle
+                # angle is between 270 and 360 in fourth quadrant
+                elif dx > 0 and dy < 0:
+                    angle=360+angle
+                return 360-angle
             if length > 2:
                 # euclidean distance between two points
                 print("Previous coordinate: ", midpoints[length-2])
                 print("Current coordinate: ", midpoints[length-1])
 
-                def findDistance(p1, p2):
-                    # find 
-                    return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
-                distance = findDistance(
-                    midpoints[length-1], midpoints[length-2])
-                print("Distance: ", "{:.2f}".format(distance))
-                # if midpoints[length-1][0] > midpoints[length-2][0]:
-                #     print("Direction: Right")
-                # else:
-                #     print("Direction: Left")
-
-                # the coordinates of the object is given in the form of (x,y)
-                # the coordinates of the drone are at the centre of the frame
-                def findAngle(p1, p2):
-                    dx=p2[0]-p1[0]
-                    dy=p2[1]-p1[1]
-                    theta=math.atan2(dy,dx)
-                    angle=math.degrees(theta)
-                    if angle<0:
-                        angle=360+angle
-                    return angle
-                angle=findAngle(centerVideo, midpoints[length-1])
-                # print("Angle: ", "{:.2f}".format(angle))
-                # give all 8 directions
-                # print the direction on the screen at the top left
-                # keep in red color
-                if angle > 337.5 or angle <= 22.5:
-                    dir="North"
-                elif angle > 22.5 and angle <= 67.5:
-                    dir="North East"
-                elif angle > 67.5 and angle <= 112.5:
-                    dir="East"
-                elif angle > 112.5 and angle <= 157.5:
-                    dir="South-East"
-                elif angle > 157.5 and angle <= 202.5:
-                    dir="South"
-                elif angle > 202.5 and angle <= 247.5:
-                    dir="South-West"
-                elif angle > 247.5 and angle <= 292.5:
-                    dir="West"
-                elif angle > 292.5 and angle <= 337.5:
-                    dir="North-West"
-                cv2.putText(frame, "Angle: "+str("{:.2f}".format(angle)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 225, 0), 2)
+            bearing=findAngle(centerVideo, midpoints[length-1])
+            cv2.putText(frame, "bearing: "+str(bearing), (10, 350), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), (0))
+            # given: lat1, lon1, b=bearing in degrees, d=distance in m
+            origin=geopy.Point(lat1, lon1)
+            destination=geodesic(meters=dist).destination(origin, bearing)
+            lat2, lon2=destination.latitude, destination.longitude
+            cv2.putText(frame, "Lat: " + str(lat2), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            cv2.putText(frame, "Long: " + str(lon2), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
         # calculate frames per second of running detections
         fps = 1.0 / (time.time() - start_time)
@@ -383,6 +365,12 @@ def main(_argv):
             out.write(result)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+    # print initial and final lat long
+    print("\n\n\nInitial Lat and Long: ", str(lat1), str(lon1))
+    print("Final Lat and Long: ", str(lat2), str(lon2))
+    # print the distance between these 2 latitudes and longitudes
+    print("Distance: ", geopy.distance.geodesic((lat1, lon1), (lat2, lon2)).m, "m")
+    print("\n\n\n")
     cv2.destroyAllWindows()
 
 
