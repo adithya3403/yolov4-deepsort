@@ -326,6 +326,18 @@ def main(_argv):
                 dx=p2[0]-p1[0]
                 dy=p2[1]-p1[1]
                 # angle is between 0 and 90 in first quadrant
+                if(dx==0):
+                    if(dy == 0):
+                        return 0
+                    elif(dy > 0):
+                        return 90
+                    else:
+                        return 270
+                elif(dy==0):
+                    if(dx > 0):
+                        return 0
+                    else:
+                        return 180
                 angle=math.degrees(math.atan(dy/dx))
                 # angle is between 90 and 180 in second quadrant
                 if dx < 0 and dy > 0:
